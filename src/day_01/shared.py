@@ -2,7 +2,7 @@ import dataclasses
 import enum
 import re
 
-from typing import List
+from typing import Iterator, List
 
 from src.shared.point import Point
 
@@ -26,9 +26,11 @@ class Instruction(object):
     steps: int
 
 
-def follow_instructions(instructions: List[Instruction]) -> Point:
+def follow_instructions(instructions: List[Instruction]) -> Iterator[Point]:
     point = Point(x=0, y=0)
     direction_index = 0
+
+    yield point
 
     for instruction in instructions:
         if instruction.turn == Turn.Left:
@@ -41,7 +43,7 @@ def follow_instructions(instructions: List[Instruction]) -> Point:
         direction = DIRECTIONS[direction_index]
         point = point.add(direction.scale(instruction.steps))
 
-    return point
+        yield point
 
 
 def parse_part(input: str) -> Instruction:

@@ -4,9 +4,10 @@ from src.shared.point import Point
 
 def solve(input: str) -> int:
     instructions = parse(input)
-    end_position = follow_instructions(instructions)
+    for position in follow_instructions(instructions):
+        pass
 
-    return end_position.magnitude
+    return position.magnitude
 
 
 if __name__ == "__main__":
