@@ -9,6 +9,7 @@ not-a-real-room-404[oarel]
 totally-real-room-200[decoy]
 """
 
+
 class TestDay04A(unittest.TestCase):
     def test_solve(self):
         self.assertEqual(solve(SAMPLE_DATA), 1514)

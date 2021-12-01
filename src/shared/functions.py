@@ -3,6 +3,7 @@ from typing import Dict, List, TypeVar
 
 T = TypeVar("T")
 
+
 def frequency_map(items: List[T]) -> Dict[T, int]:
     output: Dict[T, int] = dict()
 

@@ -8,6 +8,7 @@ from src.shared.functions import frequency_map
 
 string.ascii_lowercase
 
+
 @cache
 def letter_indices() -> Dict[str, int]:
     output: Dict[str, int] = dict()
@@ -59,6 +60,7 @@ def parse_line(line: str) -> Room:
     assert match is not None
 
     return Room(id=int(match.group(1)), parts=parts[:-1], checksum=match.group(2))
+
 
 def parse(input: str) -> List[Room]:
     return [parse_line(line) for line in input.splitlines() if line]
