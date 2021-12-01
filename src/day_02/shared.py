@@ -1,6 +1,8 @@
 from __future__ import annotations
+from dataclasses import dataclass
+import dataclasses
 import enum
-from typing import List
+from typing import Dict, List
 from src.shared.point import Point
 
 
@@ -24,28 +26,53 @@ class Direction(enum.Enum):
             raise Exception(f"Unexpected string {s}")
 
 
-NUMBERS = [
-    [1, 2, 3],
-    [4, 5, 6],
-    [7, 8, 9],
-]
+@dataclasses.dataclass
+class Keypad(object):
+    values: Dict[Point, str]
 
+    @property
+    def center(self) -> Point:
+        max_x = max([p.x for p in self.values.keys()])
+        max_y = max([p.y for p in self.values.keys()])
 
-def move(pos: Point, directions: List[Direction]) -> Point:
-    for direction in directions:
-        if direction == Direction.Up:
-            pos = Point(x=pos.x, y=max(0, pos.y - 1))
-        elif direction == Direction.Down:
-            pos = Point(x=pos.x, y=min(2, pos.y + 1))
-        elif direction == Direction.Left:
-            pos = Point(x=max(0, pos.x - 1), y=pos.y)
-        elif direction == Direction.Right:
-            pos = Point(x=min(2, pos.x + 1), y=pos.y)
-    return pos
+        return Point(x=max_x // 2, y = max_y // 2)
 
+    def move(self, pos: Point, directions: List[Direction]) -> Point:
+        for direction in directions:
+            new_pos: Point
+            if direction == Direction.Up:
+                new_pos = Point(x=pos.x, y=pos.y-1)
+            elif direction == Direction.Down:
+                new_pos = Point(x=pos.x, y=pos.y+1)
+            elif direction == Direction.Left:
+                new_pos = Point(x=pos.x-1, y=pos.y)
+            elif direction == Direction.Right:
+                new_pos = Point(x=pos.x+1, y=pos.y)
 
-def number_at_point(point: Point) -> int:
-    return NUMBERS[point.y][point.x]
+            if new_pos in self.values:
+                pos = new_pos
+
+        return pos
+
+    def char_at_point(self, point: Point) -> str:
+        output = self.values.get(point)
+        assert output is not None, f"Invalid point {point}"
+
+        return output
+
+    @classmethod
+    def from_string(cls, input: str) -> Keypad:
+        values = dict[Point, str]()
+
+        for y, line in enumerate(input.strip().splitlines()):
+            for i, char in enumerate(line):
+                # skip every other space since it's just formatting
+                if i % 2 > 0:
+                    pass
+                elif char != " ":
+                    values[Point(x=i//2, y=y)] = char
+
+        return Keypad(values=values)
 
 
 def parse(input: str) -> List[List[Direction]]:
@@ -55,3 +82,4 @@ def parse(input: str) -> List[List[Direction]]:
         output.append([Direction.from_string(char) for char in line])
 
     return output
+

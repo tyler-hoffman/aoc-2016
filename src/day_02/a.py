@@ -1,21 +1,28 @@
 from typing import List
-from src.day_02.shared import move, number_at_point, parse
-from src.shared.point import Point
+from src.day_02.shared import Keypad, parse
 
+KEYPAD_INPUT = """
+1 2 3
+4 5 6
+7 8 9
+"""
 
 def solve(input: str) -> str:
     directions = parse(input)
-    numbers: List[int] = []
+    characters: List[str] = []
+    keypad = Keypad.from_string(KEYPAD_INPUT)
 
-    pos = Point(x=1, y=1)
+    pos = keypad.center
     for line in directions:
-        pos = move(pos, line)
-        numbers.append(number_at_point(pos))
+        pos = keypad.move(pos, line)
+        characters.append(keypad.char_at_point(pos))
 
-    return "".join([f"{x}" for x in numbers])
+    return "".join(characters)
 
 
 if __name__ == "__main__":
-    input = open("src/day_02/input.txt", "r").read()
+    with open("src/day_02/input.txt", "r") as f:
+        input = f.read()
+
     output = solve(input)
     print(output)
