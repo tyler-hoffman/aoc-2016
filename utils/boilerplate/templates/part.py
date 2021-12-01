@@ -4,7 +4,9 @@ def solve(input: str) -> int:
 
 
 if __name__ == "__main__":
-    input = open("src/day_{day_string}/input.txt", "r").read()
+    with open("src/day_{day_string}/input.txt", "r") as f:
+        input = f.read()
+
     output = solve(input)
     print(output)
 
