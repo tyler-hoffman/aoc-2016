@@ -1,5 +1,4 @@
 from src.day_01.shared import follow_instructions, parse
-from src.shared.point import Point
 
 
 def solve(input: str) -> int:

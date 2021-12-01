@@ -41,9 +41,9 @@ def follow_instructions(instructions: List[Instruction]) -> Iterator[Point]:
             raise Exception(f"Invalid turn {instruction.turn}")
 
         direction = DIRECTIONS[direction_index]
-        point = point.add(direction.scale(instruction.steps))
-
-        yield point
+        for _ in range(instruction.steps):
+            point = point.add(direction)
+            yield point
 
 
 def parse_part(input: str) -> Instruction:
