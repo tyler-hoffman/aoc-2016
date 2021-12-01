@@ -7,6 +7,7 @@ KEYPAD_INPUT = """
 7 8 9
 """
 
+
 def solve(input: str) -> str:
     directions = parse(input)
     characters: List[str] = []

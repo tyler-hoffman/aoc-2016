@@ -9,6 +9,7 @@ LURDL
 UUUUD
 """
 
+
 class TestDay02B(unittest.TestCase):
     def test_solve(self):
         self.assertEqual(solve(SAMPLE_DATA), "5DB3")

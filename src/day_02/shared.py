@@ -40,13 +40,13 @@ class Keypad(object):
         for direction in directions:
             new_pos: Point
             if direction == Direction.Up:
-                new_pos = Point(x=pos.x, y=pos.y-1)
+                new_pos = Point(x=pos.x, y=pos.y - 1)
             elif direction == Direction.Down:
-                new_pos = Point(x=pos.x, y=pos.y+1)
+                new_pos = Point(x=pos.x, y=pos.y + 1)
             elif direction == Direction.Left:
-                new_pos = Point(x=pos.x-1, y=pos.y)
+                new_pos = Point(x=pos.x - 1, y=pos.y)
             elif direction == Direction.Right:
-                new_pos = Point(x=pos.x+1, y=pos.y)
+                new_pos = Point(x=pos.x + 1, y=pos.y)
 
             if new_pos in self.values:
                 pos = new_pos
@@ -69,7 +69,7 @@ class Keypad(object):
                 if i % 2 > 0:
                     pass
                 elif char != " ":
-                    values[Point(x=i//2, y=y)] = char
+                    values[Point(x=i // 2, y=y)] = char
 
         return Keypad(values=values)
 
@@ -81,4 +81,3 @@ def parse(input: str) -> List[List[Direction]]:
         output.append([Direction.from_string(char) for char in line])
 
     return output
-
