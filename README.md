@@ -1,43 +1,26 @@
-# Advent of code 2020
-*python edition*
+# advent of code 2016
 
-## Requirements
-* python3
-* pip3
+[![tyler-hoffman](https://circleci.com/gh/tyler-hoffman/aoc-2016.svg?style=svg)](https://circleci.com/gh/tyler-hoffman/aoc-2016)
+
+Python edition
 
 ## Getting started
-* `python3 -m venv .env`
-* `source .env/bin/activate`
-* `pip3 install -r requirements.txt`
+1. `python3 -m venv venv`
+1. `source venv/bin/activate`
+1. `python3 -m pip install --requirement requirements.txt`
 
-## Virtual environment
-To activate: `python3 -m venv .env`
-To deactivate: `deactivate`
+## Commands to run
+| Purpose                         | Command |
+|---------------------------------|---------|
+| Use virtual env                 | `source venv/bin/activate` |
+| Deactivate virtual env          | `deactivate` |
+| Run all tests                   | `python -m unittest` |
+| Run specific test file          | `python -m unittest <FILE>` |
+| Run solution file               | `python -m src.day_<DAY>.<PART>` (where `DAY` has a leading zero if needed) |
+| Bootstrap files for new problem | `python -m utils.boilerplate.boilerplate -d <DAY> -p <PART>` (where `DAY` has a leading zero if needed) |
+| Format code                     | `python -m black .` |
 
-## Development
-### Running tests
-Tests can be run using [`pytest`](https://docs.pytest.org/en/stable/).
-
-#### Running all tests
-`pytest`
-Note: A few days aren't optimized, and some tests are pretty slow.
-
-#### Running all tests for a day
-`pytest <DIRECTORY>`
-(e.g. `pytest day_04`)
-
-#### Running an individual test
-`pytest <PATH_TO_FILE>::<TEST_CLASS_NAME>::<TEST_NAME>`
-(e.g. `pytest day_04/test_b.py::TestDay04B::test_valid`)
-
-### Running a problem
-`python -m <PATH_TO_SOLUTION>`
-(e.g. `python -m day_05.day_05_b.py`)
-
-### Linting
-I'm using [flake8](https://flake8.pycqa.org/en/latest/) for linting. To run it:
-`flake8`
-
-### Auto-formatting
-I'm using [black](https://pypi.org/project/black/) for for auto formatting. To run it:
-`black .` (Note the `.` - you need to specify the directory)
+## Handy links
+* [AoC](https://adventofcode.com/2016)
+* [Repo](https://github.com/tyler-hoffman/aoc-2016)
+* [CI](https://app.circleci.com/pipelines/github/tyler-hoffman/aoc-2016)
