@@ -12,3 +12,8 @@ totally-real-room-200[decoy]
 class TestDay04A(unittest.TestCase):
     def test_solve(self):
         self.assertEqual(solve(SAMPLE_DATA), 1514)
+
+    def test_solution(self):
+        with open("src/day_04/input.txt", "r") as f:
+            input = f.read()
+        self.assertEqual(solve(input), 185371)
