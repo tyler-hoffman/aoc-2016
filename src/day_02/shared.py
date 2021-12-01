@@ -30,12 +30,11 @@ class Direction(enum.Enum):
 class Keypad(object):
     values: Dict[Point, str]
 
-    @property
-    def center(self) -> Point:
-        max_x = max([p.x for p in self.values.keys()])
-        max_y = max([p.y for p in self.values.keys()])
-
-        return Point(x=max_x // 2, y = max_y // 2)
+    def position_of(self, look_for: str) -> Point:
+        for point, value in self.values.items():
+            if value == look_for:
+                return point
+        assert False, f"Value {look_for} not found"
 
     def move(self, pos: Point, directions: List[Direction]) -> Point:
         for direction in directions:

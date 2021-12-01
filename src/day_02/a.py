@@ -12,7 +12,7 @@ def solve(input: str) -> str:
     characters: List[str] = []
     keypad = Keypad.from_string(KEYPAD_INPUT)
 
-    pos = keypad.center
+    pos = keypad.position_of("5")
     for line in directions:
         pos = keypad.move(pos, line)
         characters.append(keypad.char_at_point(pos))
