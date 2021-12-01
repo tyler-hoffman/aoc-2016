@@ -13,6 +13,10 @@ class TestDay04Shared(unittest.TestCase):
             ("totally-real-room-200[decoy]", False),
         ]
     )
-    def test_parse_line(self, line: str, expected: bool):
+    def test_is_valid(self, line: str, expected: bool):
         room = parse_line(line)
         self.assertEqual(room.is_valid, expected)
+
+    def test_rotate(self):
+        room = parse_line("qzmt-zixmtkozy-ivhz-343[wat]")
+        self.assertEqual(room.rotated_parts, "very encrypted name")
