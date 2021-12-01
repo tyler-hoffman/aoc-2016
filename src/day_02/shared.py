@@ -63,7 +63,7 @@ class Keypad(object):
     def from_string(cls, input: str) -> Keypad:
         values = dict[Point, str]()
 
-        for y, line in enumerate(input.strip().splitlines()):
+        for y, line in enumerate([line for line in input.splitlines() if line]):
             for i, char in enumerate(line):
                 # skip every other space since it's just formatting
                 if i % 2 > 0:
