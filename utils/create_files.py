@@ -12,7 +12,7 @@ def create_directories_if_needed(file_data: FileData) -> None:
         os.makedirs(file_data.directory)
         open(file_data.src_init_file, "x")
         with open(file_data.input_file, "w") as f:
-            content = aocd.get_data(year=2021, day=file_data.day)
+            content = aocd.get_data(year=2016, day=file_data.day)
             f.write(content)
 
     if not os.path.isdir(file_data.test_directory):
