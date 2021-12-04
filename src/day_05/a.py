@@ -1,10 +1,10 @@
 from src.day_05.shared import get_hashes_for_prefix
 
 
-def solve(id: str) -> str:
+def solve(input: str) -> str:
     output = ""
 
-    for hash in get_hashes_for_prefix(id):
+    for hash in get_hashes_for_prefix(input):
         output += hash[5]
         if len(output) == 8:
             break
