@@ -6,8 +6,6 @@ def solve(input: str) -> int:
 if __name__ == "__main__":
     with open("src/day_{day_string}/input.txt", "r") as f:
         input = f.read()
-
-    output = solve(input)
-    print(output)
+    print(solve(input))
 
 """

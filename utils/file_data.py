@@ -16,12 +16,16 @@ class FileData(object):
         return f"{self.day:02d}"
 
     @property
+    def part_module(self) -> str:
+        return f"src.day_{self.day_string}.{self.part}"
+
+    @property
     def directory(self) -> str:
-        return f"./src/day_{self.day_string}"
+        return f"src/day_{self.day_string}"
 
     @property
     def test_directory(self) -> str:
-        return f"./test/test_day_{self.day_string}"
+        return f"test/test_day_{self.day_string}"
 
     @property
     def input_file(self) -> str:
