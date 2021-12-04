@@ -1,19 +1,14 @@
-from src.day_06.shared import parse
-from src.shared.functions import frequency_map
+from typing import List
+from src.day_06.shared import Solver, parse
 
+
+class SolverB(Solver):
+    def get_character_index(self, values: List[str]) -> str:
+        return values.index(min(values))
 
 def solve(input: str) -> str:
     lines = parse(input)
-    line_len = len(lines[0])
-    output = ""
-    for i in range(line_len):
-        freqs = frequency_map(line[i] for line in lines)
-        keys = list(freqs.keys())
-        values = list(freqs.values())
-        max_index = values.index(min(values))
-        output += keys[max_index]
-    return output
-
+    return SolverB(lines).get_solution()
 
 if __name__ == "__main__":
     with open("src/day_06/input.txt", "r") as f:
