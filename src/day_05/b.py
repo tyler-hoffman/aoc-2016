@@ -3,6 +3,7 @@ from src.day_05.shared import get_hashes_for_prefix
 
 BLANK = "_"
 
+
 def solve(input: str) -> int:
     characters = [BLANK for _ in range(8)]
 
