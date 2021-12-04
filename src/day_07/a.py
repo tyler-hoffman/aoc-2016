@@ -1,5 +1,10 @@
+from src.day_07.shared import parse
+
+
 def solve(input: str) -> int:
-    return -1
+    ip_addresses = parse(input)
+
+    return len([address for address in ip_addresses if address.supports_tls])
 
 
 if __name__ == "__main__":
