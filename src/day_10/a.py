@@ -1,10 +1,10 @@
-from src.day_05.parser import Parser
-from src.day_05.solver import Solver
+from src.day_10.parser import Parser
+from src.day_10.solver import Solver
 
 class Day10PartaSolver(Solver):
     pass
 
-def solve(input: str) -> int:
+def solve(input: str, ) -> int:
     parser = Parser()
     solver = Day10PartaSolver(parser.parse(input))
 
