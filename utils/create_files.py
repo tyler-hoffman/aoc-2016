@@ -4,36 +4,53 @@ import os
 
 from utils.file_data import FileData
 from utils.templates.part import PART_TEMPLATE
+from utils.templates.parser import PARSER_TEMPLATE
+from utils.templates.solver import SOLVER_TEMPLATE
 from utils.templates.test_part import TEST_PART_TEMPLATE
+from utils.templates.test_data import TEST_DATA_TEMPLATE
+
+
+def touch_file(path: str) -> None:
+    open(path, "x")
+
+
+def write_file(path: str, content: str) -> None:
+    with open(path, "w") as f:
+        f.write(content.strip() + "\n")
 
 
 def create_directories_if_needed(file_data: FileData) -> None:
     if not os.path.isdir(file_data.directory):
         os.makedirs(file_data.directory)
-        open(file_data.src_init_file, "x")
-        with open(file_data.input_file, "w") as f:
-            content = aocd.get_data(year=2016, day=file_data.day)
-            f.write(content)
+        touch_file(file_data.src_init_file)
+        write_file(file_data.input_file, aocd.get_data(year=2016, day=file_data.day))
 
     if not os.path.isdir(file_data.test_directory):
         os.makedirs(file_data.test_directory)
-        open(file_data.test_init_file, "x")
+        touch_file(file_data.test_init_file)
 
 
 def create_part_files(file_data: FileData) -> None:
-    with open(file_data.part_file, "w") as f:
-        content = PART_TEMPLATE.format(
-            day_string=file_data.day_string, part=file_data.part
-        )
-        f.write(content.strip() + "\n")
+    write_file(
+        file_data.parser_file, PARSER_TEMPLATE.format(day_string=file_data.day_string)
+    )
+    write_file(
+        file_data.solver_file, SOLVER_TEMPLATE.format(day_string=file_data.day_string)
+    )
+    write_file(
+        file_data.part_file,
+        PART_TEMPLATE.format(day_string=file_data.day_string, part=file_data.part),
+    )
 
-    with open(file_data.test_part_file, "w") as f:
-        content = TEST_PART_TEMPLATE.format(
+    write_file(file_data.test_data_file, TEST_DATA_TEMPLATE)
+    write_file(
+        file_data.test_part_file,
+        TEST_PART_TEMPLATE.format(
             day_string=file_data.day_string,
             part=file_data.part,
             part_upper=file_data.part.upper(),
-        )
-        f.write(content.strip() + "\n")
+        ),
+    )
 
 
 def create_parser() -> argparse.ArgumentParser:

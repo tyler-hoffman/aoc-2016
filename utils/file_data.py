@@ -36,8 +36,20 @@ class FileData(object):
         return f"{self.directory}/{self.part}.py"
 
     @property
+    def parser_file(self) -> str:
+        return f"{self.directory}/parser.py"
+
+    @property
+    def solver_file(self) -> str:
+        return f"{self.directory}/solver.py"
+
+    @property
     def test_part_file(self) -> str:
         return f"{self.test_directory}/test_{self.part}.py"
+
+    @property
+    def test_data_file(self) -> str:
+        return f"{self.test_directory}/sample_data.py"
 
     @property
     def src_init_file(self) -> str:
