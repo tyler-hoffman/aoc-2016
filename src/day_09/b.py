@@ -2,7 +2,8 @@ def solve(input: str) -> int:
     return get_encrypted_length(input)
 
 
-def get_encrypted_length(input: str, index=0) -> str:
+def get_encrypted_length(input: str) -> str:
+    index = 0
     length = 0
 
     while index < len(input):
