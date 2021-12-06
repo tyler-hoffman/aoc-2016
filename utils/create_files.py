@@ -24,25 +24,27 @@ def create_directories_if_needed(file_data: FileData) -> None:
         os.makedirs(file_data.directory)
         touch_file(file_data.src_init_file)
         write_file(file_data.input_file, aocd.get_data(year=2016, day=file_data.day))
+        write_file(
+            file_data.parser_file,
+            PARSER_TEMPLATE.format(day_string=file_data.day_string),
+        )
+        write_file(
+            file_data.solver_file,
+            SOLVER_TEMPLATE.format(day_string=file_data.day_string),
+        )
 
     if not os.path.isdir(file_data.test_directory):
         os.makedirs(file_data.test_directory)
         touch_file(file_data.test_init_file)
+        write_file(file_data.test_data_file, TEST_DATA_TEMPLATE)
 
 
 def create_part_files(file_data: FileData) -> None:
-    write_file(
-        file_data.parser_file, PARSER_TEMPLATE.format(day_string=file_data.day_string)
-    )
-    write_file(
-        file_data.solver_file, SOLVER_TEMPLATE.format(day_string=file_data.day_string)
-    )
     write_file(
         file_data.part_file,
         PART_TEMPLATE.format(day_string=file_data.day_string, part=file_data.part),
     )
 
-    write_file(file_data.test_data_file, TEST_DATA_TEMPLATE)
     write_file(
         file_data.test_part_file,
         TEST_PART_TEMPLATE.format(

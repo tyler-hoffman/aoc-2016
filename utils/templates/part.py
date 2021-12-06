@@ -1,6 +1,7 @@
 PART_TEMPLATE = """
-from src.day_05.parser import Parser
-from src.day_05.solver import Solver
+from src.day_{day_string}.parser import Parser
+from src.day_{day_string}.solver import Solver
+
 
 class Day{day_string}Part{part}Solver(Solver):
     pass
