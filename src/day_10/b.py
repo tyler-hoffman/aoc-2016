@@ -15,15 +15,19 @@ class Day10PartBSolver(Solver):
     def solution(self) -> int:
         self.setup()
 
-        while True:
+        while len([bot for bot in self.bots if bot.ready_to_give]):
             bots_ready_to_give = [bot for bot in self.bots if bot.ready_to_give]
             assert len(bots_ready_to_give) > 0
             for bot in bots_ready_to_give:
-                if set(bot.values) == self.target_values:
-                    return bot.id
                 bot.give_low.values.append(min(bot.values))
                 bot.give_high.values.append(max(bot.values))
                 bot.values = []
+
+        output = 1
+        outputs_in_question = [x for x in self.outputs if x.id in {0, 1, 2}]
+        for x in outputs_in_question:
+            output *= x.values[-1]
+        return output
 
 
     def setup(self) -> None:
