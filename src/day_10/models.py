@@ -6,9 +6,9 @@ from typing import List, Optional
 
 @dataclass
 class Entity(ABC):
-
     def receive_value(self, value: int) -> None:
         ...
+
 
 @dataclass
 class Bot(object):
@@ -24,6 +24,7 @@ class Bot(object):
 
     def receive_value(self, value: int) -> None:
         self.values.append(value)
+
 
 @dataclass
 class Output(Entity):

@@ -1,43 +1,27 @@
 from dataclasses import dataclass
-from typing import List, Set, Tuple
-from src.day_10.models import Bot, Output
 from src.day_10.parser import Parser
 from src.day_10.solver import Solver
 
+
 @dataclass
 class Day10PartBSolver(Solver):
-    bots: List[Bot]
-    outputs: List[Output]
-    target_values: Set[int]
-
     @property
     def solution(self) -> int:
-        self.setup()
+        for _ in self.distribute_chips():
+            pass
 
-        while len([bot for bot in self.bots if bot.ready_to_give]):
-            bots_ready_to_give = [bot for bot in self.bots if bot.ready_to_give]
-            assert len(bots_ready_to_give) > 0
-            for bot in bots_ready_to_give:
-                bot.give_low.receive_value(min(bot.values))
-                bot.give_high.receive_value(max(bot.values))
-                bot.values = []
-
-        output = 1
-        outputs_in_question = [x for x in self.outputs if x.id in {0, 1, 2}]
-        for x in outputs_in_question:
-            output *= x.value
-        return output
+        product = 1
+        for value in [
+            output.value for output in self.outputs if output.id in {0, 1, 2}
+        ]:
+            product *= value
+        return product
 
 
-    def setup(self) -> None:
-        for bot in self.bots:
-            bot.values = bot.start_values.copy()
-
-
-def solve(input: str, values: Tuple[int, int]) -> int:
+def solve(input: str) -> int:
     parser = Parser()
     data = parser.parse(input)
-    solver = Day10PartBSolver(**data.__dict__, target_values=set(values))
+    solver = Day10PartBSolver(**data.__dict__)
 
     return solver.solution
 
@@ -45,4 +29,4 @@ def solve(input: str, values: Tuple[int, int]) -> int:
 if __name__ == "__main__":
     with open("src/day_10/input.txt", "r") as f:
         input = f.read()
-    print(solve(input, (61, 17)))
+    print(solve(input))

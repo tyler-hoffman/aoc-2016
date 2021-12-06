@@ -25,10 +25,12 @@ def create_directories_if_needed(file_data: FileData) -> None:
         touch_file(file_data.src_init_file)
         write_file(file_data.input_file, aocd.get_data(year=2016, day=file_data.day))
         write_file(
-            file_data.parser_file, PARSER_TEMPLATE.format(day_string=file_data.day_string)
+            file_data.parser_file,
+            PARSER_TEMPLATE.format(day_string=file_data.day_string),
         )
         write_file(
-            file_data.solver_file, SOLVER_TEMPLATE.format(day_string=file_data.day_string)
+            file_data.solver_file,
+            SOLVER_TEMPLATE.format(day_string=file_data.day_string),
         )
 
     if not os.path.isdir(file_data.test_directory):
