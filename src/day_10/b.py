@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from typing import List, Set, Tuple
-from src.day_10.instructions import Bot, Instruction, Output
+from src.day_10.models import Bot, Output
 from src.day_10.parser import Parser
 from src.day_10.solver import Solver
 
@@ -8,7 +8,6 @@ from src.day_10.solver import Solver
 class Day10PartBSolver(Solver):
     bots: List[Bot]
     outputs: List[Output]
-    instructions: List[Instruction]
     target_values: Set[int]
 
     @property
@@ -19,14 +18,14 @@ class Day10PartBSolver(Solver):
             bots_ready_to_give = [bot for bot in self.bots if bot.ready_to_give]
             assert len(bots_ready_to_give) > 0
             for bot in bots_ready_to_give:
-                bot.give_low.values.append(min(bot.values))
-                bot.give_high.values.append(max(bot.values))
+                bot.give_low.receive_value(min(bot.values))
+                bot.give_high.receive_value(max(bot.values))
                 bot.values = []
 
         output = 1
         outputs_in_question = [x for x in self.outputs if x.id in {0, 1, 2}]
         for x in outputs_in_question:
-            output *= x.values[-1]
+            output *= x.value
         return output
 
 

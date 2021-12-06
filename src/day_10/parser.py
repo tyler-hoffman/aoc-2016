@@ -1,16 +1,15 @@
-from dataclasses import dataclass
 import re
+from dataclasses import dataclass
 from functools import cached_property
-from typing import Dict, List, Set
+from typing import Dict, List
 
-from src.day_10.instructions import Bot, BotGivesValue, Instruction, Output, ValueGoesToBot
+from src.day_10.models import Bot, Output
 
 
 @dataclass
 class Data(object):
     bots: List[Bot]
     outputs: List[Output]
-    instructions: List[Instruction]
 
 
 class Parser(object):
@@ -23,20 +22,19 @@ class Parser(object):
         return re.compile(r"bot (\d+) gives low to (\w+) (\d+) and high to (\w+) (\d+)")
 
     def parse(self, input: str) -> Data:
-        lines = input.strip().splitlines()
         bots = self.create_bots(input)
         outputs = self.create_outputs(input)
 
-        instructions = [self.parse_instruction(line, bots, outputs) for line in lines]
+        for line in input.strip().splitlines():
+            self.parse_instruction(line, bots, outputs)
 
-        return Data(instructions=instructions, bots=list(bots.values()), outputs=list(outputs.values()))
+        return Data(bots=list(bots.values()), outputs=list(outputs.values()))
 
     def parse_instruction(self, line: str, bots: Dict[int, Bot], outputs: Dict[int, Output]) -> None:
         if (match := self.value_goes_to_bot_pattern.search(line)) is not None:
             value = int(match.group(1))
             bot = bots[int(match.group(2))]
             bot.start_values.append(value)
-            # return ValueGoesToBot(bot=bot, value=value)
         elif (match := self.bot_gives_value_pattern.search(line)) is not None:
             bot_id = int(match.group(1))
             low_entity_type = match.group(2)
