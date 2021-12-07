@@ -42,7 +42,11 @@ def create_directories_if_needed(file_data: FileData) -> None:
 def create_part_files(file_data: FileData) -> None:
     write_file(
         file_data.part_file,
-        PART_TEMPLATE.format(day_string=file_data.day_string, part=file_data.part),
+        PART_TEMPLATE.format(
+            day_string=file_data.day_string,
+            part=file_data.part,
+            part_upper=file_data.part.upper(),
+        ),
     )
 
     write_file(
