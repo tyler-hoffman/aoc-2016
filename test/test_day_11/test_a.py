@@ -6,4 +6,4 @@ from src.day_11.a import solve
 
 class TestDay11A(unittest.TestCase):
     def test_solve(self):
-        self.assertEqual(solve(SAMPLE_DATA), 1)
+        self.assertEqual(solve(SAMPLE_DATA), 11)
