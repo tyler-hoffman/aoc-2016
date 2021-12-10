@@ -1,3 +1,4 @@
+import re
 from typing import List
 
 from src.day_11.models import Category, Floor, State, Thing
@@ -6,14 +7,21 @@ from src.day_11.models import Category, Floor, State, Thing
 class Parser(object):
     @classmethod
     def parse(cls, input: str) -> State:
-        return State(floors=[cls.parse_line(line) for line in input.strip().splitlines()])
+        return State(
+            floors=tuple([cls.parse_line(line) for line in input.strip().splitlines()])
+        )
 
     @classmethod
     def parse_line(cls, line: str) -> Floor:
         if "nothing relevant" in line:
-            return Floor(things=[])
+            return Floor(things=tuple([]))
 
-        return Floor(things=set([cls.parse_piece(piece) for piece in line[:-1].split(",")]))
+        sans_period = line[:-1]
+        return Floor(
+            things=frozenset(
+                [cls.parse_piece(piece) for piece in re.split(r", | and ", sans_period)]
+            )
+        )
 
     @staticmethod
     def parse_piece(piece: str) -> Thing:
@@ -24,7 +32,8 @@ class Parser(object):
             case "generator":
                 return Thing(category=Category.Generator, element=elementish)
             case "microchip":
-                return Thing(category=Category.Microchip, element=elementish.split("-")[0])
+                return Thing(
+                    category=Category.Microchip, element=elementish.split("-")[0]
+                )
             case _:
                 raise Exception(f"Unexpected category: {category}")
-

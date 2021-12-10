@@ -8,27 +8,11 @@ from src.day_11.models import Floor, State, Thing
 
 @dataclass
 class Solver(ABC):
-    state: State
+    start_state: State
 
     @cached_property
     def all_elements(self) -> set[Thing]:
-        output: set[Thing] = set()
-        for floor in self.state.floors:
-            for thing in floor.things:
-                output.add(thing.element)
-        return output
-
-    @cached_property
-    def elements(self) -> set[str]:
-        return set([thing.element for thing in self.f])
-
-    @cached_property
-    def floor_count(self) -> int:
-        return len(self.floors)
-
-    @cached_property
-    def target_floor(self) -> int:
-        return self.floor_count - 1
+        return self.start_state.all_elements
 
     @property
     @abstractmethod
