@@ -1,9 +1,12 @@
 from dataclasses import dataclass, field
+import sys
+sys.path.append('../../src')
 from src.day_11.models import State
 from src.day_11.parser import Parser
 from src.day_11.solver import Solver
 
 infinity = float("inf")
+
 
 @dataclass
 class Day11PartASolver(Solver):
@@ -13,7 +16,7 @@ class Day11PartASolver(Solver):
 
     def determine_victory_times(self) -> set[int]:
         state = self.start_state
-        min_depth_for_state: dict[State, int] = dict()
+        min_depth_for_state: dict[int, int] = dict()
         discovered_victory_times: set[int] = set()
 
         self.visit_state_and_progress(
@@ -25,7 +28,7 @@ class Day11PartASolver(Solver):
     def visit_state_and_progress(
         self,
         state: State,
-        min_depth_for_state: dict[State, int],
+        min_depth_for_state: dict[int, int],
         discovered_victory_times: set[int],
         depth: int = 0,
     ) -> None:
@@ -33,12 +36,29 @@ class Day11PartASolver(Solver):
             discovered_victory_times.add(depth)
         elif not state.is_valid:
             return
-        elif depth < min_depth_for_state.get(state, infinity):
-            min_depth_for_state[state] = depth
+        elif depth < min_depth_for_state.get(hash(state.core_state), infinity):
+            min_depth_for_state[hash(state.core_state)] = depth
             for direction in state.valid_elevator_directions:
                 for (
                     to_move
                 ) in state.current_floor.elements_you_could_move_if_you_wanted:
+                    moves_both_of_an_element_down = all([
+                        direction == -1,
+                        len(to_move) == 2,
+                        # len(set([x.element for x in to_move])) == 1,
+                    ])
+                    moves_down_for_nothing = direction == -1 and all([floor.is_empty for floor in state.floors[:state.current_floor_index]])
+                    # moves_down_for_nothing = all([
+                    #     direction == -1,
+                    #     len(to_move) == 1,
+                    # #     all([index >= state.current_floor_index for index in state.floors_for_element(list(to_move)[0].element)])
+                    #     not any([floor.contains_element(list(to_move)[0].element) for floor in state.floors[:state.current_floor_index]])
+                    # ])
+                    if any([
+                        moves_both_of_an_element_down,
+                        moves_down_for_nothing,
+                    ]):
+                        continue
                     new_state = state.move_things(to_move, direction)
                     self.visit_state_and_progress(
                         new_state,

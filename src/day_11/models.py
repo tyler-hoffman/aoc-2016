@@ -10,6 +10,18 @@ class Category(Enum):
     Microchip = 1
     Generator = 2
 
+@dataclass(frozen=True)
+class CoreState(object):
+    floors: Tuple[CoreFloor, CoreFloor, CoreFloor, CoreFloor]
+    current_floor_index: int = 0
+
+
+@dataclass(frozen=True)
+class CoreFloor(object):
+    lone_generators: int
+    lone_microchips: int
+    pairs: int
+
 
 @dataclass(frozen=True)
 class Thing(object):
@@ -49,6 +61,9 @@ class Floor(object):
     def is_empty(self) -> bool:
         return len(self.things) == 0
 
+    def contains_element(self, element: str) -> bool:
+        return any([thing.element == element for thing in self.things])
+
     @cached_property
     def generator_elements(self) -> frozenset[str]:
         return self._get_elements_by_category(Category.Generator)
@@ -63,11 +78,28 @@ class Floor(object):
     def _get_elements_by_category(self, category: Category) -> frozenset[str]:
         return frozenset([x.element for x in self.things if x.category == category])
 
+    @cached_property
+    def core_floor(self) -> CoreFloor:
+        generator_elements = {thing.element for thing in self.things if thing.category == Category.Generator}
+        microchip_elements = {thing.element for thing in self.things if thing.category == Category.Microchip}
+        return CoreFloor(
+            lone_generators=len(generator_elements - microchip_elements),
+            lone_microchips=len(microchip_elements - generator_elements),
+            pairs=len(generator_elements.intersection(microchip_elements)),
+        )
+
 
 @dataclass(frozen=True)
 class State(object):
     floors: Tuple[Floor, Floor, Floor, Floor]
     current_floor_index: int = 0
+
+    def floors_for_element(self, element: str) -> set[int]:
+        output: set[int] = set()
+        for i, floor in enumerate(self.floors):
+            if any([thing.element == element for thing in floor.things]):
+                output.add(i)
+        return output
 
     @cached_property
     def is_victory(self) -> bool:
@@ -130,3 +162,11 @@ class State(object):
                 new_floors.append(floor)
 
         return State(floors=tuple(new_floors), current_floor_index=next_floor_index)
+
+    @cached_property
+    def core_state(self) -> CoreState:
+        return CoreState(
+            current_floor_index=self.current_floor_index,
+            floors=tuple([floor.core_floor for floor in self.floors])
+        )
+
