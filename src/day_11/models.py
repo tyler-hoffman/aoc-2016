@@ -1,6 +1,6 @@
 from __future__ import annotations
 from dataclasses import dataclass
-from functools import cached_property
+from functools import cache, cached_property, total_ordering
 from itertools import combinations
 from enum import Enum
 from typing import Iterable, Iterator, List, Tuple
@@ -13,7 +13,8 @@ class Category(Enum):
 @dataclass(frozen=True)
 class CoreState(object):
     floors: Tuple[CoreFloor, CoreFloor, CoreFloor, CoreFloor]
-    current_floor_index: int = 0
+    current_floor_index: int
+    steps: int
 
 
 @dataclass(frozen=True)
@@ -89,10 +90,61 @@ class Floor(object):
         )
 
 
+@total_ordering
 @dataclass(frozen=True)
 class State(object):
     floors: Tuple[Floor, Floor, Floor, Floor]
+    steps: int = 0
     current_floor_index: int = 0
+
+    def __lt__(self, other) -> bool:
+        if isinstance(other, State):
+            return self.optimistic_steps_to_finish < other.optimistic_steps_to_finish
+        #     if self.optimistic_steps_to_finish < other.optimistic_steps_to_finish:
+        #         return True
+        #     elif self.optimistic_steps_to_finish > other.optimistic_steps_to_finish:
+        #         return False
+        #     else:
+        #         return self.steps > other.steps
+        else:
+            return False
+
+    @cached_property
+    def optimistic_steps_to_finish(self) -> int:
+        return self.steps + self.optimistic_steps_remaining
+
+    # @cached_property
+    @property
+    def optimistic_steps_remaining(self) -> int:
+        if self.is_victory:
+            return 0
+
+
+        current_index = self.current_floor_index
+        if (item_count := len(self.current_floor.things)) > 1:
+            output = self.cost_to_clear_floor(current_index, item_count - 1, current_index)
+            remaining_floors: tuple[int, Floor] = [(i, floor) for i, floor in enumerate(self.floors[:3]) if i is not current_index and not floor.is_empty]
+        else:
+            output = self.cost_to_clear_floor(self.lowest_non_empty_floor, item_count, current_index)
+            remaining_floors: tuple[int, Floor] = [(i, floor) for i, floor in enumerate(self.floors[:3]) if i not in {self.lowest_non_empty_floor, current_index} and not floor.is_empty]
+            
+        for i, floor in remaining_floors:
+            output += self.cost_to_clear_floor(i, len(floor.things), 3)
+        return output
+    
+    @staticmethod
+    def cost_to_clear_floor(floor: int, item_count: int, from_floor: int):
+        dist_to_top = 3 - floor
+        one_way_trips = item_count * 2 - 1
+        return dist_to_top * one_way_trips + abs(floor - from_floor)
+
+    @cached_property
+    def lowest_non_empty_floor(self) -> int:
+        for i, floor in enumerate(self.floors):
+            if not floor.is_empty:
+                return i
+
+        assert False
 
     def floors_for_element(self, element: str) -> set[int]:
         output: set[int] = set()
@@ -161,12 +213,13 @@ class State(object):
             else:
                 new_floors.append(floor)
 
-        return State(floors=tuple(new_floors), current_floor_index=next_floor_index)
+        return State(floors=tuple(new_floors), current_floor_index=next_floor_index, steps=self.steps+1)
 
     @cached_property
     def core_state(self) -> CoreState:
         return CoreState(
             current_floor_index=self.current_floor_index,
-            floors=tuple([floor.core_floor for floor in self.floors])
+            floors=tuple([floor.core_floor for floor in self.floors]),
+            steps=self.steps,
         )
 

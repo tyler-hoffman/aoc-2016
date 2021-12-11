@@ -1,7 +1,8 @@
-from dataclasses import dataclass, field
-import sys
-sys.path.append('../../src')
-from src.day_11.models import State
+from dataclasses import dataclass
+from queue import PriorityQueue
+from typing import Iterator, Tuple
+
+from src.day_11.models import CoreState, State
 from src.day_11.parser import Parser
 from src.day_11.solver import Solver
 
@@ -12,60 +13,32 @@ infinity = float("inf")
 class Day11PartASolver(Solver):
     @property
     def solution(self) -> int:
-        return min(self.determine_victory_times())
+        return self.determine_victory_time()
 
-    def determine_victory_times(self) -> set[int]:
-        state = self.start_state
-        min_depth_for_state: dict[int, int] = dict()
-        discovered_victory_times: set[int] = set()
+    def determine_victory_time(self) -> int:
+        basically_covered_stuff = set[CoreState]()
+        to_check = PriorityQueue[Tuple[int, int, State]]()
+        to_check.put((self.start_state.optimistic_steps_to_finish, -self.start_state.steps, self.start_state))
 
-        self.visit_state_and_progress(
-            state, min_depth_for_state, discovered_victory_times
-        )
+        while not to_check.empty():
+            _, _, state = to_check.get()
+            if state.core_state in basically_covered_stuff:
+                continue
 
-        return discovered_victory_times
+            if state.is_victory:
+                return state.steps
+            else:
+                basically_covered_stuff.add(state.core_state)
+                for next_state in self.potential_next_steps_for_state(state):
+                    to_check.put((next_state.optimistic_steps_to_finish, -next_state.steps, next_state))
 
-    def visit_state_and_progress(
-        self,
-        state: State,
-        min_depth_for_state: dict[int, int],
-        discovered_victory_times: set[int],
-        depth: int = 0,
-    ) -> None:
-        if state.is_victory:
-            discovered_victory_times.add(depth)
-        elif not state.is_valid:
-            return
-        elif depth < min_depth_for_state.get(hash(state.core_state), infinity):
-            min_depth_for_state[hash(state.core_state)] = depth
-            for direction in state.valid_elevator_directions:
-                for (
-                    to_move
-                ) in state.current_floor.elements_you_could_move_if_you_wanted:
-                    moves_both_of_an_element_down = all([
-                        direction == -1,
-                        len(to_move) == 2,
-                        # len(set([x.element for x in to_move])) == 1,
-                    ])
-                    moves_down_for_nothing = direction == -1 and all([floor.is_empty for floor in state.floors[:state.current_floor_index]])
-                    # moves_down_for_nothing = all([
-                    #     direction == -1,
-                    #     len(to_move) == 1,
-                    # #     all([index >= state.current_floor_index for index in state.floors_for_element(list(to_move)[0].element)])
-                    #     not any([floor.contains_element(list(to_move)[0].element) for floor in state.floors[:state.current_floor_index]])
-                    # ])
-                    if any([
-                        moves_both_of_an_element_down,
-                        moves_down_for_nothing,
-                    ]):
-                        continue
-                    new_state = state.move_things(to_move, direction)
-                    self.visit_state_and_progress(
-                        new_state,
-                        min_depth_for_state,
-                        discovered_victory_times,
-                        depth + 1,
-                    )
+        assert False, "We should have returned a solution by now"
+
+    def potential_next_steps_for_state(self, state: State) -> Iterator[State]:
+        for direction in state.valid_elevator_directions:
+            for to_move in state.current_floor.elements_you_could_move_if_you_wanted:
+                if (next_state := state.move_things(to_move, direction)).is_valid: 
+                    yield next_state
 
 
 def solve(input: str) -> int:
