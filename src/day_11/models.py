@@ -10,6 +10,7 @@ class Category(Enum):
     Microchip = 1
     Generator = 2
 
+
 @dataclass(frozen=True)
 class CoreState(object):
     floors: Tuple[CoreFloor, CoreFloor, CoreFloor, CoreFloor]
@@ -62,9 +63,6 @@ class Floor(object):
     def is_empty(self) -> bool:
         return len(self.things) == 0
 
-    def contains_element(self, element: str) -> bool:
-        return any([thing.element == element for thing in self.things])
-
     @cached_property
     def generator_elements(self) -> frozenset[str]:
         return self._get_elements_by_category(Category.Generator)
@@ -81,8 +79,16 @@ class Floor(object):
 
     @cached_property
     def core_floor(self) -> CoreFloor:
-        generator_elements = {thing.element for thing in self.things if thing.category == Category.Generator}
-        microchip_elements = {thing.element for thing in self.things if thing.category == Category.Microchip}
+        generator_elements = {
+            thing.element
+            for thing in self.things
+            if thing.category == Category.Generator
+        }
+        microchip_elements = {
+            thing.element
+            for thing in self.things
+            if thing.category == Category.Microchip
+        }
         return CoreFloor(
             lone_generators=len(generator_elements - microchip_elements),
             lone_microchips=len(microchip_elements - generator_elements),
@@ -100,12 +106,6 @@ class State(object):
     def __lt__(self, other) -> bool:
         if isinstance(other, State):
             return self.optimistic_steps_to_finish < other.optimistic_steps_to_finish
-        #     if self.optimistic_steps_to_finish < other.optimistic_steps_to_finish:
-        #         return True
-        #     elif self.optimistic_steps_to_finish > other.optimistic_steps_to_finish:
-        #         return False
-        #     else:
-        #         return self.steps > other.steps
         else:
             return False
 
@@ -113,25 +113,36 @@ class State(object):
     def optimistic_steps_to_finish(self) -> int:
         return self.steps + self.optimistic_steps_remaining
 
-    # @cached_property
-    @property
+    @cached_property
     def optimistic_steps_remaining(self) -> int:
         if self.is_victory:
             return 0
 
-
         current_index = self.current_floor_index
         if (item_count := len(self.current_floor.things)) > 1:
-            output = self.cost_to_clear_floor(current_index, item_count - 1, current_index)
-            remaining_floors: tuple[int, Floor] = [(i, floor) for i, floor in enumerate(self.floors[:3]) if i is not current_index and not floor.is_empty]
+            output = self.cost_to_clear_floor(
+                current_index, item_count - 1, current_index
+            )
+            remaining_floors: tuple[int, Floor] = [
+                (i, floor)
+                for i, floor in enumerate(self.floors[:3])
+                if i is not current_index and not floor.is_empty
+            ]
         else:
-            output = self.cost_to_clear_floor(self.lowest_non_empty_floor, item_count, current_index)
-            remaining_floors: tuple[int, Floor] = [(i, floor) for i, floor in enumerate(self.floors[:3]) if i not in {self.lowest_non_empty_floor, current_index} and not floor.is_empty]
-            
+            output = self.cost_to_clear_floor(
+                self.lowest_non_empty_floor, item_count, current_index
+            )
+            remaining_floors: tuple[int, Floor] = [
+                (i, floor)
+                for i, floor in enumerate(self.floors[:3])
+                if i not in {self.lowest_non_empty_floor, current_index}
+                and not floor.is_empty
+            ]
+
         for i, floor in remaining_floors:
             output += self.cost_to_clear_floor(i, len(floor.things), 3)
         return output
-    
+
     @staticmethod
     def cost_to_clear_floor(floor: int, item_count: int, from_floor: int):
         dist_to_top = 3 - floor
@@ -146,20 +157,9 @@ class State(object):
 
         assert False
 
-    def floors_for_element(self, element: str) -> set[int]:
-        output: set[int] = set()
-        for i, floor in enumerate(self.floors):
-            if any([thing.element == element for thing in floor.things]):
-                output.add(i)
-        return output
-
     @cached_property
     def is_victory(self) -> bool:
         return all([floor.is_empty for floor in self.floors[:3]])
-
-    @cached_property
-    def elements(self) -> set[str]:
-        return set([thing.element for thing in self.f])
 
     @cached_property
     def floor_count(self) -> int:
@@ -168,18 +168,6 @@ class State(object):
     @cached_property
     def current_floor(self) -> Floor:
         return self.floors[self.current_floor_index]
-
-    @cached_property
-    def target_floor(self) -> int:
-        return self.floor_count - 1
-
-    @cached_property
-    def all_elements(self) -> set[Thing]:
-        output: set[Thing] = set()
-        for floor in self.floors:
-            for thing in floor.things:
-                output.add(thing.element)
-        return output
 
     @property
     def is_valid(self) -> bool:
@@ -213,7 +201,11 @@ class State(object):
             else:
                 new_floors.append(floor)
 
-        return State(floors=tuple(new_floors), current_floor_index=next_floor_index, steps=self.steps+1)
+        return State(
+            floors=tuple(new_floors),
+            current_floor_index=next_floor_index,
+            steps=self.steps + 1,
+        )
 
     @cached_property
     def core_state(self) -> CoreState:
@@ -222,4 +214,3 @@ class State(object):
             floors=tuple([floor.core_floor for floor in self.floors]),
             steps=self.steps,
         )
-

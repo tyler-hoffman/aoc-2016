@@ -8,9 +8,7 @@ class Parser(object):
     @classmethod
     def parse(cls, input: str) -> State:
         floors = [cls.parse_line(line) for line in input.strip().splitlines()]
-        return State(
-            floors=tuple(floors)
-        )
+        return State(floors=tuple(floors))
 
     @classmethod
     def parse_line(cls, line: str) -> Floor:
