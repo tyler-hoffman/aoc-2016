@@ -7,8 +7,9 @@ from src.day_11.models import Category, Floor, State, Thing
 class Parser(object):
     @classmethod
     def parse(cls, input: str) -> State:
+        floors = [cls.parse_line(line) for line in input.strip().splitlines()]
         return State(
-            floors=tuple([cls.parse_line(line) for line in input.strip().splitlines()])
+            floors=tuple(floors)
         )
 
     @classmethod

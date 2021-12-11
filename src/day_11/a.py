@@ -6,19 +6,17 @@ from src.day_11.models import CoreState, State
 from src.day_11.parser import Parser
 from src.day_11.solver import Solver
 
-infinity = float("inf")
-
 
 @dataclass
 class Day11PartASolver(Solver):
     @property
     def solution(self) -> int:
-        return self.determine_victory_time()
+        return self.determine_victory_time(self.start_state)
 
-    def determine_victory_time(self) -> int:
+    def determine_victory_time(self, state: State) -> int:
         basically_covered_stuff = set[CoreState]()
         to_check = PriorityQueue[Tuple[int, int, State]]()
-        to_check.put((self.start_state.optimistic_steps_to_finish, -self.start_state.steps, self.start_state))
+        to_check.put((state.optimistic_steps_to_finish, -state.steps, state))
 
         while not to_check.empty():
             _, _, state = to_check.get()
