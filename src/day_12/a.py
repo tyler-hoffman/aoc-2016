@@ -1,4 +1,4 @@
-from src.day_12.machine import Instruction, Machine
+from src.day_12.machine import Machine
 from src.day_12.parser import Parser
 from src.day_12.solver import Solver
 
