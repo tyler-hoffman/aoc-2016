@@ -3,10 +3,13 @@ from src.day_12.parser import Parser
 from src.day_12.solver import Solver
 
 
-class Day12PartASolver(Solver):
+class Day12PartBSolver(Solver):
     @property
     def solution(self) -> int:
-        machine = Machine(instructions=self.instructions)
+        machine = Machine(
+            instructions=self.instructions,
+            registers={"a": 0, "b": 0, "c": 1, "d": 0},
+        )
         machine.run()
 
         return machine.registers["a"]
@@ -14,7 +17,7 @@ class Day12PartASolver(Solver):
 
 def solve(input: str) -> int:
     instructions = Parser.parse(input)
-    solver = Day12PartASolver(instructions)
+    solver = Day12PartBSolver(instructions)
 
     return solver.solution
 
