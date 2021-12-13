@@ -13,6 +13,7 @@ class Entity(Enum):
     Wall = 1
     Space = 2
 
+
 @dataclass
 class Solver(ABC):
     secret: int
@@ -57,22 +58,24 @@ class Board(object):
         return [x for x in potentials if self.is_valid(x)]
 
     def is_valid(self, point: Point) -> bool:
-        return all([
-            point.x >= 0,
-            point.y >= 0,
-            self.point_to_entity(point) != Entity.Wall,
-        ])
+        return all(
+            [
+                point.x >= 0,
+                point.y >= 0,
+                self.point_to_entity(point) != Entity.Wall,
+            ]
+        )
 
     def point_to_entity(self, point: Point) -> Entity:
         x, y = point.x, point.y
-        number = x*x + 3*x + 2*x*y + y + y*y + self.secret
+        number = x * x + 3 * x + 2 * x * y + y + y * y + self.secret
 
         return self.int_to_entity(number)
 
     @staticmethod
     def int_to_entity(x: int) -> Entity:
         bits = bin(x)[2:]
-        ones = len([bit for bit in bits if bit == '1'])
+        ones = len([bit for bit in bits if bit == "1"])
 
         return Entity.Space if ones % 2 == 0 else Entity.Wall
 

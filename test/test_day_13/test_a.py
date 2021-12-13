@@ -13,6 +13,6 @@ class TestDay13A(unittest.TestCase):
         self.assertEqual(solve(goal=goal, secret=secret), 11)
 
     def test_solution(self):
-        goal = Point(x=31,y=39)
+        goal = Point(x=31, y=39)
         secret = 1352
         self.assertEqual(solve(goal=goal, secret=secret), 90)

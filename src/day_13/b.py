@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from src.day_13.solver import Solver
 
+
 @dataclass
 class Day13PartbSolver(Solver):
     target: int

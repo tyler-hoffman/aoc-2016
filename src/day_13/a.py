@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from src.day_13.solver import Solver
 from src.shared.point import Point
 
+
 @dataclass
 class Day13PartASolver(Solver):
     goal: Point
@@ -22,6 +23,6 @@ def solve(goal: Point, secret: int) -> int:
 
 
 if __name__ == "__main__":
-    goal = Point(x=31,y=39)
+    goal = Point(x=31, y=39)
     secret = 1352
     print(solve(goal, secret))
