@@ -15,7 +15,6 @@ class Entity(Enum):
 
 @dataclass
 class Solver(ABC):
-    goal: Point
     secret: int
 
     @property
@@ -50,10 +49,10 @@ class Board(object):
         while True:
             steps, point = self.to_check.get()
             self.discover_point(point, steps)
+            yield CellData(point=point, steps=steps)
             for neighbor in self.get_neighbors(point):
                 if neighbor not in self.points_by_distance:
                     self.discover_point(neighbor, steps + 1)
-                    yield CellData(point=neighbor, steps=steps + 1)
 
 
     def discover_point(self, point: Point, steps: 0) -> None:
@@ -73,8 +72,8 @@ class Board(object):
 
     def is_valid(self, point: Point) -> bool:
         return all([
-            point.x > 0,
-            point.y > 0,
+            point.x >= 0,
+            point.y >= 0,
             self.point_to_entity(point) != Entity.Wall,
         ])
 
