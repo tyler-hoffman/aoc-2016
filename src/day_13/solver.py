@@ -36,35 +36,21 @@ class CellData(object):
 @dataclass
 class Board(object):
     secret: int
-    points_by_distance: dict[Point, int] = field(default_factory=dict)
     to_check: PriorityQueue[tuple[int, Point]] = field(default_factory=PriorityQueue)
     marked: set[Point] = field(default_factory=set)
 
     def discover(self) -> Iterator[CellData]:
         start = Point(1, 1)
         self.marked.add(start)
-        self.discover_point(start, 0)
-        yield CellData(point=start, steps=0)
+        self.to_check.put((0, start))
 
         while True:
             steps, point = self.to_check.get()
-            self.discover_point(point, steps)
             yield CellData(point=point, steps=steps)
-            for neighbor in self.get_neighbors(point):
-                if neighbor not in self.points_by_distance:
-                    self.discover_point(neighbor, steps + 1)
-
-
-    def discover_point(self, point: Point, steps: 0) -> None:
-        if point not in self.points_by_distance:
-            self.points_by_distance[point] = steps
             for neighbor in self.get_neighbors(point):
                 if neighbor not in self.marked:
                     self.marked.add(neighbor)
                     self.to_check.put((steps + 1, neighbor))
-        elif self.points_by_distance[point] < steps:
-            assert False, "Invariant failed"
-
 
     def get_neighbors(self, point: Point) -> list[Point]:
         potentials = [point + move for move in self.moves()]
@@ -89,10 +75,6 @@ class Board(object):
         ones = len([bit for bit in bits if bit == '1'])
 
         return Entity.Space if ones % 2 == 0 else Entity.Wall
-
-    @staticmethod
-    def manhattan(a: Point, b: Point) -> int:
-        return abs(a.x - b.x) + abs(a.y - b.y)
 
     @staticmethod
     @cache

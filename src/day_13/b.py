@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from src.day_13.solver import Solver
-from src.shared.point import Point
 
 @dataclass
 class Day13PartbSolver(Solver):
