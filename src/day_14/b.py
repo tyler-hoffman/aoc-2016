@@ -2,7 +2,7 @@ from src.day_14.solver import Solver
 
 
 def solve(salt: str) -> int:
-    solver = Solver(salt=salt.strip(), hashes_per_string=1)
+    solver = Solver(salt=salt.strip(), hashes_per_string=2017)
 
     return solver.solution
 

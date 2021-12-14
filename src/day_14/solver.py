@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from hashlib import md5
-from more_itertools.recipes import sliding_window
+from more_itertools import nth, sliding_window
 from queue import Queue
 from typing import Iterator, Optional
 
@@ -23,6 +23,10 @@ class Solver(object):
     triple_to_keys: dict[str, set[Key]] = field(default_factory=dict)
     key_queue: Queue[Optional[Key]] = field(default_factory=Queue)
 
+    @property
+    def solution(self) -> int:
+        return nth(self.get_keys(), 63).index
+
     def get_keys(self) -> Iterator[Key]:
         index = 0
 
@@ -33,8 +37,6 @@ class Solver(object):
                     if key.found_match:
                         yield key
 
-            # to_hash = f"{self.salt}{index}"
-            # hashed = md5(to_hash.encode()).hexdigest()
             hashed = self.hash_it_up(f"{self.salt}{index}")
             triple = self.get_first_run(hashed, 3)
             pentuple = self.get_first_run(hashed, 5)
@@ -55,7 +57,9 @@ class Solver(object):
             index += 1
 
     def hash_it_up(self, string: str) -> str:
-        for _ in range(self.hashes_per_string):
+        string = md5(string.encode()).hexdigest()
+
+        for _ in range(self.hashes_per_string - 1):
             string = md5(string.encode()).hexdigest()
         return string
 
@@ -65,4 +69,3 @@ class Solver(object):
             if len(set(window)) == 1:
                 return window[0] * count
         return None
-
