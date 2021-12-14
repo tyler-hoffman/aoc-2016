@@ -1,0 +1,3 @@
+SAMPLE_DATA = """
+abc
+"""
