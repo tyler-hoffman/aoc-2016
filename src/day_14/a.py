@@ -9,7 +9,7 @@ class Day14PartASolver(Solver):
 
 
 def solve(salt: str) -> int:
-    solver = Day14PartASolver(salt=salt.strip())
+    solver = Day14PartASolver(salt=salt.strip(), hashes_per_string=1)
 
     return solver.solution
 

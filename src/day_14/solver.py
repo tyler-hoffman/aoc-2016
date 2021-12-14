@@ -19,6 +19,7 @@ class Key(object):
 @dataclass
 class Solver(object):
     salt: str
+    hashes_per_string: int
     triple_to_keys: dict[str, set[Key]] = field(default_factory=dict)
     key_queue: Queue[Optional[Key]] = field(default_factory=Queue)
 
@@ -28,13 +29,13 @@ class Solver(object):
         while True:
             if index > 1000:
                 if key := self.key_queue.get():
-                    # self.triple_to_keys[key.triple] = {k for k in self.triple_to_keys[key.triple] if k.index > key.index}
                     self.triple_to_keys[key.triple].remove(key)
                     if key.found_match:
                         yield key
 
-            to_hash = f"{self.salt}{index}"
-            hashed = md5(to_hash.encode()).hexdigest()
+            # to_hash = f"{self.salt}{index}"
+            # hashed = md5(to_hash.encode()).hexdigest()
+            hashed = self.hash_it_up(f"{self.salt}{index}")
             triple = self.get_first_run(hashed, 3)
             pentuple = self.get_first_run(hashed, 5)
 
@@ -52,6 +53,11 @@ class Solver(object):
             else:
                 self.key_queue.put(None)
             index += 1
+
+    def hash_it_up(self, string: str) -> str:
+        for _ in range(self.hashes_per_string):
+            string = md5(string.encode()).hexdigest()
+        return string
 
     @staticmethod
     def get_first_run(string: str, count: int) -> Optional[str]:
