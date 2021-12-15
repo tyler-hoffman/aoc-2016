@@ -12,8 +12,8 @@ class Parser(object):
 
     @classmethod
     def parse_disk(cls, line: str) -> Disk:
-       depth, positions, _, start  = [int(x) for x in re.findall(r"\d+", line)]
-       return Disk(positions=positions, start=start, depth=depth)
+        depth, positions, _, start = [int(x) for x in re.findall(r"\d+", line)]
+        return Disk(positions=positions, start=start, depth=depth)
 
     @staticmethod
     @cache
