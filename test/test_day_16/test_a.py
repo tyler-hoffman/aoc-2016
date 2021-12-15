@@ -10,4 +10,4 @@ class TestDay16A(unittest.TestCase):
     def test_solution(self):
         with open("src/day_16/input.txt", "r") as f:
             initial_state = f.read()
-            self.assertEqual(solve(initial_state=initial_state), "00000100100001100")
+            self.assertEqual(solve(initial_state), "00000100100001100")
