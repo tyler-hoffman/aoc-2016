@@ -2,6 +2,7 @@ from more_itertools import first
 from src.day_17.parser import Parser
 from src.day_17.solver import Solver
 
+
 class Day17PartASolver(Solver):
     @property
     def solution(self) -> str:

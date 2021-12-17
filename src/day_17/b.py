@@ -2,6 +2,7 @@ from more_itertools import last
 from src.day_17.parser import Parser
 from src.day_17.solver import Solver
 
+
 class Day17PartBSolver(Solver):
     @property
     def solution(self) -> int:

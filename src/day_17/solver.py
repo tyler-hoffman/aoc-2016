@@ -51,7 +51,9 @@ class Solver(ABC):
             else:
                 for door in self.open_doors(state):
                     move = self.directions[door]
-                    self.to_explore.put(State(position=state.position + move, path=state.path + door))
+                    self.to_explore.put(
+                        State(position=state.position + move, path=state.path + door)
+                    )
                     self.queue_size += 1
         # raise StopIteration()
 
@@ -89,10 +91,10 @@ class Solver(ABC):
     @cache
     def directions(cls) -> dict[str, Point]:
         return {
-            'U': Point(x=0, y=-1),
-            'D': Point(x=0, y=1),
-            'R': Point(x=1, y=0),
-            'L': Point(x=-1, y=0),
+            "U": Point(x=0, y=-1),
+            "D": Point(x=0, y=1),
+            "R": Point(x=1, y=0),
+            "L": Point(x=-1, y=0),
         }
 
     @staticmethod

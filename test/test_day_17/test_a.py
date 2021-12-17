@@ -5,11 +5,13 @@ from src.day_17.a import solve
 
 
 class TestDay17A(unittest.TestCase):
-    @parameterized.expand([
-        ('ihgpwlah', 'DDRRRD'),
-        ('kglvqrro', 'DDUDRLRRUDRD'),
-        ('ulqzkmiv', 'DRURDRUDDLLDLUURRDULRLDUUDDDRR'),
-    ])
+    @parameterized.expand(
+        [
+            ("ihgpwlah", "DDRRRD"),
+            ("kglvqrro", "DDUDRLRRUDRD"),
+            ("ulqzkmiv", "DRURDRUDDLLDLUURRDULRLDUUDDDRR"),
+        ]
+    )
     def test_solve(self, passcode: str, path: str):
         self.assertEqual(solve(passcode), path)
 
