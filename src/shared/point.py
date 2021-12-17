@@ -1,6 +1,6 @@
 from __future__ import annotations
 from dataclasses import dataclass
-from functools import total_ordering
+from functools import cached_property, total_ordering
 from typing import Any
 
 
@@ -28,10 +28,9 @@ class Point(object):
     def scale(self, amt: int) -> Point:
         return Point(x=self.x * amt, y=self.y * amt)
 
-    @property
-    def magnitude(self) -> int:
-        return sum([abs(value) for value in (self.x, self.y)])
+    def manhattan_dist(self, other: Point) -> int:
+        return abs(self.x - other.x) + abs(self.y - other.y)
 
-    @property
+    @cached_property
     def magnitude(self) -> int:
         return abs(self.x) + abs(self.y)
