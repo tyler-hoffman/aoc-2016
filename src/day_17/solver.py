@@ -53,7 +53,7 @@ class Solver(ABC):
                     move = self.directions[door]
                     self.to_explore.put(State(position=state.position + move, path=state.path + door))
                     self.queue_size += 1
-        raise StopIteration()
+        # raise StopIteration()
 
     def add_to_queue(self, state: State) -> None:
         self.to_explore.put(state)

@@ -1,16 +1,16 @@
-from more_itertools import first
+from more_itertools import last
 from src.day_17.parser import Parser
 from src.day_17.solver import Solver
 
-class Day17PartASolver(Solver):
+class Day17PartBSolver(Solver):
     @property
-    def solution(self) -> str:
-        return first(self.get_paths())
+    def solution(self) -> int:
+        return len(last(self.get_paths()))
 
 
-def solve(input: str) -> str:
+def solve(input: str) -> int:
     passcode = Parser.parse(input)
-    solver = Day17PartASolver(passcode=passcode)
+    solver = Day17PartBSolver(passcode=passcode)
 
     return solver.solution
 
