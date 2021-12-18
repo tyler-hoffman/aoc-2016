@@ -11,6 +11,7 @@ class Day18PartBSolver(Solver):
             safe_count += self.row_safe_count(row)
         return safe_count
 
+
 def solve(input: str, length: int) -> int:
     first_row = Parser.parse(input)
     solver = Day18PartBSolver(first_row=first_row, row_count=length)

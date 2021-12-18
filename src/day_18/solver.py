@@ -25,12 +25,14 @@ class Solver(ABC):
         center = prev[index]
         right = index == self.row_len - 1 or prev[index + 1]
 
-        return not any([
-            [left, center, right] == [True, True, False],
-            [left, center, right] == [False, True, True],
-            [left, center, right] == [True, False, False],
-            [left, center, right] == [False, False, True],
-        ])
+        return not any(
+            [
+                [left, center, right] == [True, True, False],
+                [left, center, right] == [False, True, True],
+                [left, center, right] == [True, False, False],
+                [left, center, right] == [False, False, True],
+            ]
+        )
 
     @cached_property
     def row_len(self) -> int:
