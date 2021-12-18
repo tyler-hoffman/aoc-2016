@@ -14,4 +14,6 @@ class Solver(ABC):
 @dataclass
 class Link(object):
     value: int
+    prev: Optional[Link] = None
     next: Optional[Link] = None
+    opposite: Optional[Link] = None
