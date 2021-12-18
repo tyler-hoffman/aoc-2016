@@ -12,7 +12,7 @@ class Day18PartASolver(Solver):
         return safe_count
 
 
-def solve(input: str, length: int) -> int:
+def solve(input: str, length: int = 40) -> int:
     first_row = Parser.parse(input)
     solver = Day18PartASolver(first_row=first_row, row_count=length)
 
@@ -22,4 +22,4 @@ def solve(input: str, length: int) -> int:
 if __name__ == "__main__":
     with open("src/day_18/input.txt", "r") as f:
         input = f.read()
-        print(solve(input, 40))
+        print(solve(input))
