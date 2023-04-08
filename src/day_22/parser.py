@@ -5,12 +5,14 @@ from src.shared.point import Point
 
 
 class Parser:
-    line_pattern = re.compile(r"/dev/grid/node-x(\d+)-y(\d+)\s+(\d+)T\s+(\d+)T\s+(\d+)T")
+    line_pattern = re.compile(
+        r"/dev/grid/node-x(\d+)-y(\d+)\s+(\d+)T\s+(\d+)T\s+(\d+)T"
+    )
 
     @classmethod
     def parse(cls, input: str) -> Mapping[Point, Node]:
         lines = input.splitlines()[2:]
-        nodes  = {cls.parse_line(line) for line in lines}
+        nodes = {cls.parse_line(line) for line in lines}
         return {n.coords: n for n in nodes}
 
     @classmethod
@@ -27,4 +29,3 @@ class Parser:
         assert node.avail == avail
 
         return node
-

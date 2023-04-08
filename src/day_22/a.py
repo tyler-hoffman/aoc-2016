@@ -6,6 +6,7 @@ from src.day_22.parser import Parser
 from src.day_22.solver import Solver
 from src.shared.point import Point
 
+
 @dataclass
 class Day22PartASolver(Solver):
     node_map: Mapping[Point, Node]
@@ -19,12 +20,7 @@ class Day22PartASolver(Solver):
         output: set[tuple[Node, Node]] = set()
         for a in self.nodes:
             for b in self.nodes:
-                if all([
-                    a != b,
-                    not a.empty,
-                    a.used <= b.avail,
-                    (b, a) not in output
-                ]):
+                if all([a != b, not a.empty, a.used <= b.avail, (b, a) not in output]):
                     output.add((a, b))
         return output
 
