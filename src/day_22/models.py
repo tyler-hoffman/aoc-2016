@@ -1,3 +1,4 @@
+from __future__ import annotations
 from dataclasses import dataclass
 from src.shared.point import Point
 
@@ -18,3 +19,7 @@ class Node:
 
     def __hash__(self) -> int:
         return hash(self.coords)
+
+    def with_used(self, amt: int) -> Node:
+        return Node(self.coords, self.size, amt)
+

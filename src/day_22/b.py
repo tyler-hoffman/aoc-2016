@@ -1,14 +1,31 @@
 from __future__ import annotations
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from functools import cached_property
-from typing import Iterator, Mapping
+from typing import Generic, Iterator, Mapping, Optional, TypeVar
 from src.day_22.models import Node
 from src.day_22.parser import Parser
 from src.day_22.solver import Solver
 from src.shared.point import Point
 
+T = TypeVar("T")
 
-@dataclass
+@dataclass(frozen=True)
+class LinkedList(Generic[T]):
+    value: T
+    prev: Optional[LinkedList[T]]
+
+    def __iter__(self) -> Iterator[T]:
+        yield self.value
+        if self.prev:
+            yield from self.prev.__iter__()
+
+    def __len__(self) -> int:
+        return 1 if self.prev is None else 1 + len(self.prev)
+
+    def append(self, value: T) -> LinkedList[T]:
+        return LinkedList[T](value, self)
+
+@dataclass(frozen=True)
 class Move:
     start: Point
     end: Point
@@ -17,6 +34,50 @@ class Move:
     @property
     def reverse(self) -> Move:
         return Move(start=self.end, end=self.start, amt=self.amt)
+
+@dataclass(frozen=True)
+class State:
+    node_map: Mapping[Point, Node]
+    start: Point
+    data_start: Point
+    moves: LinkedList[Point]
+
+    @cached_property
+    def override_map(self) -> Mapping[Point, Node]:
+        output: dict[Point, Node] = {}
+        current = self.start
+        for next_pos in self.moves:
+            current_node = self.node(current)
+            next_node = self.node(next_pos)
+
+            output[current] = current_node.with_used(next_node.used)
+            output[next_pos] = next_node.with_used(0)
+
+            current = next_pos
+        return output
+
+    @cached_property
+    def data_point(self) -> Point:
+        data_pos = self.data_start
+        current_pos = self.start
+        for next_pos in self.moves:
+            if next_pos == data_pos:
+                data_pos = current_pos
+            current_pos = next_pos
+        return data_pos
+
+
+    def move(self, pos: Point) -> State:
+        return State(self.node_map, self.start, self.data_start, self.moves.append(pos))
+
+
+    def node(self, point: Point) -> Node:
+        return self.override_map.get(point, self.node_map[point])
+
+    @cached_property
+    def score(self) -> int:
+        return len(self.moves)
+
 
 
 @dataclass
