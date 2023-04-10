@@ -31,6 +31,15 @@ class Point(object):
     def manhattan_dist(self, other: Point) -> int:
         return abs(self.x - other.x) + abs(self.y - other.y)
 
+    @property
+    def manhattan_neighbors(self) -> set[Point]:
+        return {
+            Point(self.x, self.y - 1),
+            Point(self.x, self.y + 1),
+            Point(self.x - 1, self.y),
+            Point(self.x + 1, self.y),
+        }
+
     @cached_property
     def magnitude(self) -> int:
         return abs(self.x) + abs(self.y)

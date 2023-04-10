@@ -1,7 +1,8 @@
 from __future__ import annotations
 from dataclasses import dataclass, field
-from functools import cached_property
-from typing import Generic, Iterator, Mapping, Optional, TypeVar
+from functools import cached_property, total_ordering
+from queue import PriorityQueue
+from typing import Any, Generic, Iterator, Mapping, Optional, TypeVar
 from src.day_22.models import Node
 from src.day_22.parser import Parser
 from src.day_22.solver import Solver
@@ -15,15 +16,16 @@ class LinkedList(Generic[T]):
     prev: Optional[LinkedList[T]]
 
     def __iter__(self) -> Iterator[T]:
-        yield self.value
         if self.prev:
             yield from self.prev.__iter__()
+        yield self.value
 
     def __len__(self) -> int:
         return 1 if self.prev is None else 1 + len(self.prev)
 
     def append(self, value: T) -> LinkedList[T]:
         return LinkedList[T](value, self)
+
 
 @dataclass(frozen=True)
 class Move:
@@ -35,20 +37,27 @@ class Move:
     def reverse(self) -> Move:
         return Move(start=self.end, end=self.start, amt=self.amt)
 
+@total_ordering
 @dataclass(frozen=True)
 class State:
     node_map: Mapping[Point, Node]
     start: Point
     data_start: Point
-    moves: LinkedList[Point]
+    moves: Optional[LinkedList[Point]]
+
+    def __lt__(self, other: Any) -> bool:
+        if isinstance(other, State):
+            return self.score < other.score
+        else:
+            raise Exception(f"{other} can't be compared to State")
 
     @cached_property
     def override_map(self) -> Mapping[Point, Node]:
         output: dict[Point, Node] = {}
         current = self.start
-        for next_pos in self.moves:
-            current_node = self.node(current)
-            next_node = self.node(next_pos)
+        for next_pos in self.moves or []:
+            current_node = self.get_node(current)
+            next_node = self.get_node(next_pos)
 
             output[current] = current_node.with_used(next_node.used)
             output[next_pos] = next_node.with_used(0)
@@ -60,24 +69,39 @@ class State:
     def data_point(self) -> Point:
         data_pos = self.data_start
         current_pos = self.start
-        for next_pos in self.moves:
+        for next_pos in self.moves or []:
             if next_pos == data_pos:
                 data_pos = current_pos
             current_pos = next_pos
         return data_pos
 
-
-    def move(self, pos: Point) -> State:
-        return State(self.node_map, self.start, self.data_start, self.moves.append(pos))
-
-
-    def node(self, point: Point) -> Node:
+    def get_node(self, point: Point) -> Node:
         return self.override_map.get(point, self.node_map[point])
 
     @cached_property
     def score(self) -> int:
-        return len(self.moves)
+        return self.move_count - self.pos.manhattan_dist(self.data_point) - self.data_point.manhattan_dist(Point(0, 0))
 
+    @cached_property
+    def move_count(self) -> int:
+        return len(self.moves) if self.moves else 0
+
+    @cached_property
+    def done(self) -> bool:
+        return self.data_point == Point(0, 0)
+
+    @property
+    def pos(self) -> Point:
+        return self.moves.value if self.moves else self.start
+
+    def next_states(self) -> Iterator[State]:
+        for neighbor in self.pos.manhattan_neighbors:
+            if neighbor in self.node_map and self.get_node(neighbor).used <= self.get_node(self.pos).avail:
+                yield self.move(neighbor)
+
+    def move(self, pos: Point) -> State:
+        new_moves = self.moves.append(pos) if self.moves else LinkedList(pos, None)
+        return State(self.node_map, self.start, self.data_start, new_moves)
 
 
 @dataclass
@@ -86,21 +110,37 @@ class Day22PartBSolver(Solver):
 
     @property
     def solution(self) -> int:
-        data_pos = self.target_coord
-        current_node = self.find_the_only_empty_node()
-        max_depth = 1
+        q = PriorityQueue[State]()
+        q.put(State(self.node_map, self.find_the_only_empty_node().coords, self.target_coord, None))
+
         while True:
-            max_depth *= 2
-            print(max_depth)
-            fewest_steps = self.solve_for_remaining_depth(
-                pos=current_node.coords,
-                data_pos=data_pos,
-                moves_so_far=[],
-                remaining_depth=max_depth,
-            )
-            as_set = set(fewest_steps)
-            if len(as_set) > 0:
-                return min(as_set)
+            state = q.get()
+            if state.done:
+                return state.move_count
+            else:
+                for next_state in state.next_states():
+                    q.put(next_state)
+
+
+
+        # data_pos = self.target_coord
+        # current_node = self.find_the_only_empty_node()
+        # start_state = State(self.node_map, current_node.coords, data_pos, [])
+
+
+        # max_depth = 1
+        # while True:
+        #     max_depth *= 2
+        #     print(max_depth)
+        #     fewest_steps = self.solve_for_remaining_depth(
+        #         pos=current_node.coords,
+        #         data_pos=data_pos,
+        #         moves_so_far=[],
+        #         remaining_depth=max_depth,
+        #     )
+        #     as_set = set(fewest_steps)
+        #     if len(as_set) > 0:
+        #         return min(as_set)
 
     def solve_for_remaining_depth(
         self,
