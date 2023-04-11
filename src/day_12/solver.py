@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
-from src.day_12.machine import Instruction
+from src.shared.machine import Instruction
 
 
 @dataclass

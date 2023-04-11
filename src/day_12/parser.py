@@ -1,4 +1,4 @@
-from src.day_12.machine import Cpy, Dec, Inc, Instruction, Jnz
+from src.shared.machine import Cpy, Dec, Inc, Instruction, Jnz
 
 
 class Parser(object):
@@ -18,9 +18,11 @@ class Parser(object):
                 return Cpy(value=cls.parse_value(words[1]), register=words[2])
             case "jnz":
                 return Jnz(register=cls.parse_value(words[1]), offset=int(words[2]))
+            case _:
+                assert False
 
     @classmethod
-    def parse_value(cls, word: str) -> Instruction:
+    def parse_value(cls, word: str) -> int | str:
         if word.isnumeric():
             return int(word)
         else:

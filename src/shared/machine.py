@@ -19,7 +19,7 @@ class Cpy(object):
 
 @dataclass
 class Jnz(object):
-    register: str
+    register: str | int
     offset: int
 
 
