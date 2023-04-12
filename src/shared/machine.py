@@ -19,8 +19,8 @@ class Cpy(object):
 
 @dataclass
 class Jnz(object):
-    register: str | int
-    offset: int
+    discriminator: str | int
+    offset: str | int
 
 
 Instruction = Inc | Dec | Cpy | Jnz
@@ -45,7 +45,7 @@ class Machine(object):
                     self.registers[register] = self.value(value)
                 case Jnz(value, offset):
                     if self.value(value):
-                        self.pointer += offset - 1
+                        self.pointer += self.value(offset) - 1
             self.pointer += 1
 
     @property
