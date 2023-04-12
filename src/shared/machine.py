@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from functools import cached_property
 
 
 @dataclass
@@ -22,8 +23,12 @@ class Jnz(object):
     discriminator: str | int
     offset: str | int
 
+@dataclass
+class Tgl(object):
+    offset: str | int
 
-Instruction = Inc | Dec | Cpy | Jnz
+
+Instruction = Inc | Dec | Cpy | Jnz | Tgl
 
 
 @dataclass
@@ -36,17 +41,33 @@ class Machine(object):
 
     def run(self):
         while 0 <= self.pointer < len(self.instructions):
-            match self.current_instruction:
-                case Inc(register):
-                    self.registers[register] += 1
-                case Dec(register):
-                    self.registers[register] -= 1
-                case Cpy(value, register):
-                    self.registers[register] = self.value(value)
-                case Jnz(value, offset):
-                    if self.value(value):
-                        self.pointer += self.value(offset) - 1
+            if self.toggled_registers[self.pointer]:
+                self.run_toggled()
+            else:
+                self.run_non_toggled()
             self.pointer += 1
+
+    def run_toggled(self):
+        ...
+
+    def run_non_toggled(self):
+        match self.current_instruction:
+            case Inc(register):
+                self.registers[register] += 1
+            case Dec(register):
+                self.registers[register] -= 1
+            case Cpy(value, register):
+                self.registers[register] = self.value(value)
+            case Jnz(value, offset):
+                if self.value(value):
+                    self.pointer += self.value(offset) - 1
+            case Tgl(offset):
+                index = self.pointer + self.value(offset)
+                self.toggled_registers[index] = not self.toggled_registers[index]
+
+    @cached_property
+    def toggled_registers(self) -> list[bool]:
+        return [False for _ in self.instructions]
 
     @property
     def current_instruction(self) -> Instruction:
