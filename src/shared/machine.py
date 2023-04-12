@@ -23,6 +23,7 @@ class Jnz(object):
     discriminator: str | int
     offset: str | int
 
+
 @dataclass
 class Tgl(object):
     offset: str | int
@@ -48,7 +49,20 @@ class Machine(object):
             self.pointer += 1
 
     def run_toggled(self):
-        ...
+        match self.current_instruction:
+            case Inc(register):
+                self.registers[register] -= 1
+            case Dec(register):
+                self.registers[register] += 1
+            case Cpy(value, offset):
+                if self.value(value):
+                    self.pointer += self.value(offset) - 1
+            case Jnz(value, register):
+                if isinstance(register, str):
+                    self.registers[register] = self.value(value)
+            case Tgl(register):
+                if isinstance(register, str):
+                    self.registers[register] += 1
 
     def run_non_toggled(self):
         match self.current_instruction:
@@ -63,7 +77,8 @@ class Machine(object):
                     self.pointer += self.value(offset) - 1
             case Tgl(offset):
                 index = self.pointer + self.value(offset)
-                self.toggled_registers[index] = not self.toggled_registers[index]
+                if 0 <= index < len(self.instructions):
+                    self.toggled_registers[index] = not self.toggled_registers[index]
 
     @cached_property
     def toggled_registers(self) -> list[bool]:

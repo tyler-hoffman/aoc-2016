@@ -17,7 +17,10 @@ class Parser(object):
             case "cpy":
                 return Cpy(value=cls.parse_value(words[1]), register=words[2])
             case "jnz":
-                return Jnz(discriminator=cls.parse_value(words[1]), offset=cls.parse_value(words[2]))
+                return Jnz(
+                    discriminator=cls.parse_value(words[1]),
+                    offset=cls.parse_value(words[2]),
+                )
             case _:
                 assert False
 

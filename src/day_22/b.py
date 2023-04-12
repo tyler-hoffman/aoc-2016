@@ -10,9 +10,11 @@ from src.shared.point import Point
 
 T = TypeVar("T")
 
+
 @dataclass(frozen=True)
 class NodeMap:
     map: Mapping[Point, Node] = field(hash=False)
+
 
 @dataclass(frozen=True)
 class LinkedList(Generic[T]):
@@ -42,8 +44,10 @@ class Move:
     def reverse(self) -> Move:
         return Move(start=self.end, end=self.start, amt=self.amt)
 
+
 def weight(value: int, offset: int = 0, weight: int = 1) -> int:
     return (value - offset) * weight
+
 
 @total_ordering
 @dataclass(frozen=True)
@@ -98,16 +102,18 @@ class State:
 
     @cached_property
     def score(self) -> int:
-        return sum([
-            weight(self.move_count, 0, 2),
-            weight(self.pos.manhattan_dist(self.data_point), 1, 2),
-            # weight(self.pos.manhattan_dist(Point(0, 0)), 1, 2),
-            # weight(self.data_point.manhattan_dist(Point(0, 0)), 0, 2),
-            # weight(self.pos.manhattan_dist(self.start), 0, -2),
-            weight(self.loop_count, 0, 4),
-            # weight(max(1, self.pos.y), 1, 1),
-            # weight(max(1, self.pos.x), 1, 1),
-        ])
+        return sum(
+            [
+                weight(self.move_count, 0, 2),
+                weight(self.pos.manhattan_dist(self.data_point), 1, 2),
+                # weight(self.pos.manhattan_dist(Point(0, 0)), 1, 2),
+                # weight(self.data_point.manhattan_dist(Point(0, 0)), 0, 2),
+                # weight(self.pos.manhattan_dist(self.start), 0, -2),
+                weight(self.loop_count, 0, 4),
+                # weight(max(1, self.pos.y), 1, 1),
+                # weight(max(1, self.pos.x), 1, 1),
+            ]
+        )
 
     @cached_property
     def move_count(self) -> int:
@@ -122,7 +128,6 @@ class State:
                 output += 1
             pos = next_pos
         return output
-
 
     @cached_property
     def done(self) -> bool:
@@ -146,7 +151,11 @@ class State:
 
     def next_states(self) -> Iterator[State]:
         for neighbor in self.pos.manhattan_neighbors:
-            if neighbor in self.node_map.map and self.get_node(neighbor).used <= self.get_node(self.pos).avail and neighbor != self.prev:
+            if (
+                neighbor in self.node_map.map
+                and self.get_node(neighbor).used <= self.get_node(self.pos).avail
+                and neighbor != self.prev
+            ):
                 yield self.move(neighbor)
 
     def move(self, pos: Point) -> State:
@@ -164,11 +173,23 @@ class Day22PartBSolver(Solver):
 
     @property
     def solution(self) -> int:
-        # a* to target coord (- 1x), 
-        return self.find_the_only_empty_node().coords.manhattan_dist(self.entrance) + self.entrance.manhattan_dist(self.target_coord.add(Point(-1, 0))) + 5 * self.target_coord.x - 4
+        # a* to target coord (- 1x),
+        return (
+            self.find_the_only_empty_node().coords.manhattan_dist(self.entrance)
+            + self.entrance.manhattan_dist(self.target_coord.add(Point(-1, 0)))
+            + 5 * self.target_coord.x
+            - 4
+        )
         self.print(set())
         q = PriorityQueue[State]()
-        q.put(State.make(self.wrapped_node_map, self.find_the_only_empty_node().coords, self.target_coord, None))
+        q.put(
+            State.make(
+                self.wrapped_node_map,
+                self.find_the_only_empty_node().coords,
+                self.target_coord,
+                None,
+            )
+        )
         visited = set[Point]([self.find_the_only_empty_node().coords])
 
         dist = 0
@@ -195,18 +216,15 @@ class Day22PartBSolver(Solver):
                 for next_state in state.next_states():
                     q.put(next_state)
 
-
     @property
     def entrance(self) -> Point:
         walls = [p for p, k in self.node_map.items() if k.used > 100]
         wall_xs = [w.x for w in walls]
-        return Point(x = min(wall_xs) - 1, y = walls[0].y)
-
+        return Point(x=min(wall_xs) - 1, y=walls[0].y)
 
         # data_pos = self.target_coord
         # current_node = self.find_the_only_empty_node()
         # start_state = State(self.node_map, current_node.coords, data_pos, [])
-
 
         # max_depth = 1
         # while True:
@@ -260,7 +278,9 @@ class Day22PartBSolver(Solver):
                 end_node.used += move.amt
                 start_node.used -= move.amt
 
-    def usable_neighbors(self, pos: Point, moves_so_far: list[Move], data_pos: Point) -> set[Point]:
+    def usable_neighbors(
+        self, pos: Point, moves_so_far: list[Move], data_pos: Point
+    ) -> set[Point]:
         assert self.node_map[pos].used == 0
         last_pos = moves_so_far[-1].start if len(moves_so_far) > 0 else None
         return {
@@ -274,7 +294,9 @@ class Day22PartBSolver(Solver):
             )
         }
 
-    def has_bad_loop(self, pos: Point, moves_so_far: list[Move], data_pos: Point) -> bool:
+    def has_bad_loop(
+        self, pos: Point, moves_so_far: list[Move], data_pos: Point
+    ) -> bool:
         for m in moves_so_far[::-1]:
             if m.end == data_pos:
                 return False

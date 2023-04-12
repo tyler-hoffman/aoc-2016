@@ -22,4 +22,3 @@ class Node:
 
     def with_used(self, amt: int) -> Node:
         return Node(self.coords, self.size, amt)
-
