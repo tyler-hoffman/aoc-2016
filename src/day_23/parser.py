@@ -1,4 +1,4 @@
-from src.shared.machine import Cpy, Dec, Inc, Instruction, Jnz
+from src.shared.machine import Cpy, Dec, Inc, Instruction, Jnz, Tgl
 
 
 class Parser(object):
@@ -21,6 +21,8 @@ class Parser(object):
                     discriminator=cls.parse_value(words[1]),
                     offset=cls.parse_value(words[2]),
                 )
+            case "tgl":
+                return Tgl(offset=cls.parse_value(words[1]))
             case _:
                 assert False
 

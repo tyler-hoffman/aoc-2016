@@ -16,6 +16,7 @@ Filesystem            Size  Used  Avail  Use%
 /dev/grid/node-x2-y2    9T    6T     3T   66%
 """.strip()
 
+
 class TestDay22B(unittest.TestCase):
     def test_solve(self):
         self.assertEqual(solve(SAMPLE_DATA), 7)
